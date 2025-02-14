@@ -124,6 +124,7 @@ main = do
   putStr "\n First Letter: "
   print (r1 !! 0 !! 0)
   
+
   putStrLn "\nNaive Substitition"
   putStrLn   "=================="
 
@@ -146,17 +147,25 @@ main = do
   putStrLn "\nE : Naive Substitition"
   putStrLn   "=================="
 
+  let allWords = wordlist1 ++ wordlist2
+  let withE = sort $ filter (elem 'E') allWords
+  let withoutE = sort $ filter (not . elem 'E') allWords
+  print (withE)
+  print (withoutE)
+  let ((er1c1, er1c2), (er2c1, er2c2)) = (wordgrid withE withoutE)
+  let (er1, er2, ec1, ec2) = (er1c1 ++ er1c2, er2c1 ++ er2c2, er1c1 ++ er2c1, er1c2 ++ er2c2) -- Common Haskell W
+
   putStrLn   "\nTOP = RED, BOTTOM = BLUE"
-  naiveSubstitition r1 r2
+  naiveSubstitition er1 er2
 
   putStrLn   "\nTOP = BLUE, BOTTOM = RED"
   putStrLn   "------------------"
-  naiveSubstitition r2 r1
+  naiveSubstitition er2 er1
 
   putStrLn "\nLEFT = RED, RIGHT = BLUE"
   putStrLn "------------------"
-  naiveSubstitition c1 c2
+  naiveSubstitition ec1 ec2
 
   putStrLn "\nLEFT = BLUE, RIGHT = RED"
   putStrLn "------------------"
-  naiveSubstitition c2 c1
+  naiveSubstitition ec2 ec1

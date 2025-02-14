@@ -1,5 +1,4 @@
 import qualified System.Console.ANSI as ANSI
-import Data.Matrix
 import Data.List
 
 -- Original wordlists as read from the problem statement.
@@ -40,19 +39,14 @@ wordlist2 =
   ]
 
 -- Word Matrix
-wordmatrix :: Matrix [String]
-wordmatrix = fromLists
-  [ [ a, b ]
-  , [ c, d ]
-  ]
+wordgrid :: (([String], [String]), ([String], [String]))
+wordgrid =
+  ( ( a, b )
+  , ( c, d )
+  )
   where
     (a, b) = splitAt 7 wordlist1
     (c, d) = splitAt 7 wordlist2
-
--- Define a custom operator for indexing.
-infixl 9 !.
-(!.) :: Matrix a -> (Int, Int) -> a
-m !. (i, j) = getElem i j m
 
 -- The original instructions as read from the problem statement.
 data Token = Lit String | Red Int | Blue Int
@@ -112,40 +106,57 @@ main = do
   putStrLn   "--------------"
   printwords wordlist1 wordlist2
 
-  putStrLn "\nWord Matrix"
+  putStrLn "\nWord Grid"
   putStrLn   "-----------"
-  print wordmatrix
+  let ((r1c1, r1c2), (r2c1, r2c2)) = wordgrid
+  let (r1, r2, c1, c2) = (r1c1 ++ r1c2, r2c1 ++ r2c2, r1c1 ++ r2c1, r1c2 ++ r2c2) -- Common Haskell W
+  print wordgrid
   putStr "\n Row 1: "
-  print (getRow 1 wordmatrix)
+  print (r1)
   putStr "\n Row 2: "
-  print (getRow 2 wordmatrix)
+  print (r2)
   putStr "\n Col 1: "
-  print (getCol 1 wordmatrix)
+  print (c1)
   putStr "\n Col 2: "
-  print (getCol 2 wordmatrix)
+  print (c2)
   putStr "\n First Word: "
-  print (wordmatrix !. (1, 1) !! 0)
+  print (r1 !! 0)
   putStr "\n First Letter: "
-  print (wordmatrix !. (1, 1) !! 0 !! 0)
+  print (r1 !! 0 !! 0)
   
   putStrLn "\nNaive Substitition"
   putStrLn   "=================="
 
   putStrLn   "\nTOP = RED, BOTTOM = BLUE"
-  naiveSubstitition wordlist1 wordlist2
+  naiveSubstitition r1 r2
 
   putStrLn   "\nTOP = BLUE, BOTTOM = RED"
   putStrLn   "------------------"
-  naiveSubstitition wordlist2 wordlist1
+  naiveSubstitition r2 r1
 
   putStrLn "\nLEFT = RED, RIGHT = BLUE"
   putStrLn "------------------"
-  (let redwords  = wordmatrix !. (1, 1) ++ wordmatrix !. (2, 1)
-       bluewords = wordmatrix !. (1, 2) ++ wordmatrix !. (2, 2)
-    in naiveSubstitition redwords bluewords)
+  naiveSubstitition c1 c2
 
   putStrLn "\nLEFT = BLUE, RIGHT = RED"
   putStrLn "------------------"
-  (let redwords  = wordmatrix !. (1, 2) ++ wordmatrix !. (2, 2)
-       bluewords = wordmatrix !. (1, 1) ++ wordmatrix !. (2, 1)
-   in naiveSubstitition redwords bluewords)
+  naiveSubstitition c2 c1
+
+
+  putStrLn "\nE : Naive Substitition"
+  putStrLn   "=================="
+
+  putStrLn   "\nTOP = RED, BOTTOM = BLUE"
+  naiveSubstitition r1 r2
+
+  putStrLn   "\nTOP = BLUE, BOTTOM = RED"
+  putStrLn   "------------------"
+  naiveSubstitition r2 r1
+
+  putStrLn "\nLEFT = RED, RIGHT = BLUE"
+  putStrLn "------------------"
+  naiveSubstitition c1 c2
+
+  putStrLn "\nLEFT = BLUE, RIGHT = RED"
+  putStrLn "------------------"
+  naiveSubstitition c2 c1

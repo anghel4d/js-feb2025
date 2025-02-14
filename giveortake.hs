@@ -38,15 +38,15 @@ wordlist2 =
   , "TROPE"
   ]
 
--- Word Matrix
-wordgrid :: (([String], [String]), ([String], [String]))
-wordgrid =
+-- Word Grid
+wordgrid :: [String] -> [String] -> (([String], [String]), ([String], [String]))
+wordgrid row1 row2 =
   ( ( a, b )
   , ( c, d )
   )
   where
-    (a, b) = splitAt 7 wordlist1
-    (c, d) = splitAt 7 wordlist2
+    (a, b) = splitAt 7 row1
+    (c, d) = splitAt 7 row2
 
 -- The original instructions as read from the problem statement.
 data Token = Lit String | Red Int | Blue Int
@@ -108,9 +108,9 @@ main = do
 
   putStrLn "\nWord Grid"
   putStrLn   "-----------"
-  let ((r1c1, r1c2), (r2c1, r2c2)) = wordgrid
+  let ((r1c1, r1c2), (r2c1, r2c2)) = (wordgrid wordlist1 wordlist2)
   let (r1, r2, c1, c2) = (r1c1 ++ r1c2, r2c1 ++ r2c2, r1c1 ++ r2c1, r1c2 ++ r2c2) -- Common Haskell W
-  print wordgrid
+  print (wordgrid wordlist1 wordlist2)
   putStr "\n Row 1: "
   print (r1)
   putStr "\n Row 2: "

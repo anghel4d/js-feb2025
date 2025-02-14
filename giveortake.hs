@@ -123,11 +123,11 @@ main = do
   print (getCol 1 wordmatrix)
   putStr "\n Col 2: "
   print (getCol 2 wordmatrix)
-  printwords (wordmatrix !. (1, 1) ++ wordmatrix !. (1, 2))
-             (wordmatrix !. (2, 1) ++ wordmatrix !. (2, 2))
+  putStr "\n First Word: "
   print (wordmatrix !. (1, 1) !! 0)
+  putStr "\n First Letter: "
   print (wordmatrix !. (1, 1) !! 0 !! 0)
-
+  
   putStrLn "\nNaive Substitition"
   putStrLn   "=================="
 
@@ -137,11 +137,15 @@ main = do
   putStrLn   "\nTOP = BLUE, BOTTOM = RED"
   putStrLn   "------------------"
   naiveSubstitition wordlist2 wordlist1
-  
-  putStrLn   "\nLEFT = RED, RIGHT = BLUE"
-  putStrLn   "------------------"
-  naiveSubstitition (wordmatrix !. (1, 1) ++ wordmatrix !. (1, 2)) (wordmatrix !. (2, 1) ++ wordmatrix !. (2, 2))
 
-  putStrLn   "\nLEFT = BLUE, RIGHT = RED"
-  putStrLn   "------------------"
-  naiveSubstitition (wordmatrix !. (2, 1) ++ wordmatrix !. (2, 2)) (wordmatrix !. (1, 1) ++ wordmatrix !. (1, 2))
+  putStrLn "\nLEFT = RED, RIGHT = BLUE"
+  putStrLn "------------------"
+  (let redwords  = wordmatrix !. (1, 1) ++ wordmatrix !. (2, 1)
+       bluewords = wordmatrix !. (1, 2) ++ wordmatrix !. (2, 2)
+    in naiveSubstitition redwords bluewords)
+
+  putStrLn "\nLEFT = BLUE, RIGHT = RED"
+  putStrLn "------------------"
+  (let redwords  = wordmatrix !. (1, 2) ++ wordmatrix !. (2, 2)
+       bluewords = wordmatrix !. (1, 1) ++ wordmatrix !. (2, 1)
+   in naiveSubstitition redwords bluewords)

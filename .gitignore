@@ -1,0 +1,8 @@
+# First, ignore everything.
+*
+
+# Allow specific files
+!*.hs
+!*.cabal
+!*.md
+!.gitignore

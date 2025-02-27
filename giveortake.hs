@@ -1,5 +1,7 @@
 import qualified System.Console.ANSI as ANSI
 import Data.List
+import Data.Maybe (mapMaybe)
+
 
 -- Original wordlists as read from the problem statement.
 wordlist1 :: [String]
@@ -99,6 +101,42 @@ naiveSubstitition redWords blueWords = mapM_ printLine originalInstructions
       putStrLn ""
 
 
+-- | Attempt to interpret puzzle instructions as letter-extractions:
+--   Here we do something very simplistic:
+--   * 'Red i' => take the i-th letter of the i-th RED word
+--   * 'Blue i' => take the i-th letter of the i-th BLUE word
+--   * 'Lit _' => ignore
+--
+-- Feel free to adapt to your own logic if you suspect "5 11 of the 11 12"
+-- means something more complex (like concatenating words #11 and #12, etc.).
+extractMessage :: [String]         -- ^ Red words
+               -> [String]         -- ^ Blue words
+               -> [[Token]]        -- ^ The puzzle instructions
+               -> String           -- ^ The extracted "message"
+extractMessage redWords blueWords = 
+  mapMaybe (getLetterFromToken redWords blueWords) . concat
+  where
+    getLetterFromToken :: [String] -> [String] -> Token -> Maybe Char
+    getLetterFromToken reds blues (Red i) =
+      let wIndex = i - 1
+      in if wIndex >= 0 && wIndex < length reds
+         then let word = reds !! wIndex
+              in if i <= length word
+                 then Just (word !! (i - 1))  -- i-th letter
+                 else Nothing
+         else Nothing
+    getLetterFromToken reds blues (Blue i) =
+      let wIndex = i - 1
+      in if wIndex >= 0 && wIndex < length blues
+         then let word = blues !! wIndex
+              in if i <= length word
+                 then Just (word !! (i - 1))
+                 else Nothing
+         else Nothing
+    getLetterFromToken _    _     (Lit _) = Nothing
+
+
+
 -- ENTRY POINT.
 main :: IO ()
 main = do
@@ -129,6 +167,7 @@ main = do
   putStrLn   "=================="
 
   putStrLn   "\nTOP = RED, BOTTOM = BLUE"
+  putStrLn "------------------"
   naiveSubstitition r1 r2
 
   putStrLn   "\nTOP = BLUE, BOTTOM = RED"
@@ -168,6 +207,7 @@ main = do
   print (er1 !! 0 !! 0)
 
   putStrLn   "\nTOP = RED, BOTTOM = BLUE"
+  putStrLn "------------------"
   naiveSubstitition er1 er2
 
   putStrLn   "\nTOP = BLUE, BOTTOM = RED"
@@ -181,3 +221,49 @@ main = do
   putStrLn "\nLEFT = BLUE, RIGHT = RED"
   putStrLn "------------------"
   naiveSubstitition ec2 ec1
+
+
+  putStrLn "\n\n"
+  putStrLn "\nLetter Extractions"
+  putStrLn   "=================="
+  -- Startomg with r1 r2
+  let topRedBottomBlueMsg = extractMessage r1 r2 originalInstructions
+  putStrLn "Hidden message (TOP=RED, BOTTOM=BLUE) =>"
+  putStrLn topRedBottomBlueMsg
+
+  -- next r2 r1 
+  let topBlueBottomRedMsg = extractMessage r2 r1 originalInstructions
+  putStrLn "\nHidden message (TOP=BLUE, BOTTOM=RED) =>"
+  putStrLn topBlueBottomRedMsg
+
+  -- next c1 c2
+  let leftRedRightBlueMsg = extractMessage c1 c2 originalInstructions
+  putStrLn "\nHidden message (LEFT=RED, RIGHT=BLUE) =>"
+  putStrLn leftRedRightBlueMsg
+
+  -- next c2 c1
+  let leftBlueRightRedMsg = extractMessage c2 c1 originalInstructions
+  putStrLn "\nHidden message (LEFT=BLUE, RIGHT=RED) =>"
+  putStrLn leftBlueRightRedMsg
+
+  -- next er1 er2
+  let eTopRedBottomBlueMsg = extractMessage er1 er2 originalInstructions
+  putStrLn "\nHidden message (TOP=RED, BOTTOM=BLUE) =>"
+  putStrLn topRedBottomBlueMsg
+
+  -- next er2 er1
+  let eTopBlueBottomRedMsg = extractMessage er2 er1 originalInstructions
+  putStrLn "\nHidden message (TOP=BLUE, BOTTOM=RED) =>"
+  putStrLn topBlueBottomRedMsg
+  
+  -- next ec1 ec2
+  let eLeftRedRightBlueMsg = extractMessage ec1 ec2 originalInstructions
+  putStrLn "\nHidden message (LEFT=RED, RIGHT=BLUE) =>"
+  putStrLn leftRedRightBlueMsg
+
+  -- next ec2 ec1
+  let eLeftBlueRightRedMsg = extractMessage ec2 ec1 originalInstructions
+  putStrLn "\nHidden message (LEFT=BLUE, RIGHT=RED) =>"
+  putStrLn leftBlueRightRedMsg
+  
+  -- TODO: Break this up into smaller functions as "Strategies" and test them individually.
